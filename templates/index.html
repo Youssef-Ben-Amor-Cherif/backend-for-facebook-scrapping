@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Facebook Group Scraper</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .container {
+            margin-top: 50px;
+        }
+        .card {
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .card-title {
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+        }
+        .form-control {
+            margin-bottom: 15px;
+        }
+        .submit-btn {
+            width: 100%;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <h2 class="card-title">Facebook Group Scraper</h2>
+                <form id="scrapeForm">
+                    <div class="mb-3">
+                        <label for="groupUrl" class="form-label">Facebook Group URL</label>
+                        <input type="url" class="form-control" id="groupUrl" placeholder="Enter group URL" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="searchTerm" class="form-label">Search Term</label>
+                        <input type="text" class="form-control" id="searchTerm" placeholder="Enter search term" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="maxPosts" class="form-label">Max Posts to Scrape</label>
+                        <input type="number" class="form-control" id="maxPosts" placeholder="Enter max number of posts" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary submit-btn">Start Scraping</button>
+                </form>
+                <div id="scrapeResults" class="mt-4"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<!-- jQuery (for AJAX requests) -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#scrapeForm').on('submit', function (e) {
+            e.preventDefault();
+
+            var groupUrl = $('#groupUrl').val();
+            var searchTerm = $('#searchTerm').val();
+            var maxPosts = $('#maxPosts').val();
+
+            $.ajax({
+                url: '/scrap_groupe',
+                method: 'GET',
+                data: { 
+                    group_url: groupUrl, 
+                    search_term: searchTerm, 
+                    max_posts: maxPosts 
+                },
+                beforeSend: function () {
+                    $('#scrapeResults').html('<p class="text-center text-info">Scraping in progress...</p>');
+                },
+                success: function (data) {
+                    var output = '<h4 class="text-success">Scraping completed successfully!</h4>';
+                    output += '<ul class="list-group">';
+
+                    data.forEach(function (post, index) {
+                        output += '<li class="list-group-item">';
+                        output += '<strong>Post ' + (index + 1) + ':</strong> ' + post.post_text + '<br>';
+                        output += '<strong>Comments:</strong> ' + post.comments;
+                        output += '</li>';
+                    });
+
+                    output += '</ul>';
+                    $('#scrapeResults').html(output);
+                },
+                error: function () {
+                    $('#scrapeResults').html('<p class="text-danger">An error occurred while scraping.</p>');
+                }
+            });
+        });
+    });
+</script>
+
+</body>
+</html>
