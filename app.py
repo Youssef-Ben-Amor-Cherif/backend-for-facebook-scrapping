@@ -61,7 +61,7 @@ def scroll_and_click(driver, element, retries=3):
 
 chrome_options = Options()
 chrome_options.add_argument('--headless')  # Ensure headless mode
-#chrome_options.add_argument('--no-sandbox')  # Bypass OS security model, required in cloud environments
+chrome_options.add_argument('--no-sandbox')  # Bypass OS security model, required in cloud environments
 chrome_options.add_argument('--disable-dev-shm-usage')
 
 chrome_options.add_argument("--window-size=2560,1440")
@@ -78,9 +78,8 @@ chrome_options.add_argument("--start-maximized")
 
 service = Service(ChromeDriverManager().install(), port=0)  # Let OS pick an open port
 driver = webdriver.Chrome(service=service, options=chrome_options)
-
+driver.set_page_load_timeout(60)
 # Initialize WebDriver
-#driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
 # Initialize WebDriver
 def human_typing(element, text):
     for char in text:
