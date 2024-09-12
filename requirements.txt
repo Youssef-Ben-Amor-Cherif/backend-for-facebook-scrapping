@@ -6,3 +6,4 @@ pip
 setuptools
 webdriver-manager
 flask
+gunicorn
