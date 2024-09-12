@@ -80,7 +80,7 @@ service = Service(ChromeDriverManager().install(), port=0)  # Let OS pick an ope
 driver = webdriver.Chrome(service=service, options=chrome_options)
 
 # Initialize WebDriver
-driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+#driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
 # Initialize WebDriver
 def human_typing(element, text):
     for char in text:
