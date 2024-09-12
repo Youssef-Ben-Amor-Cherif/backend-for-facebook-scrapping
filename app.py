@@ -1,6 +1,6 @@
-from flask import Flask, jsonify, render_template, request
+from flask import Flask, jsonify, render_template, request,send_file
 
-
+import os
 import hashlib
 import random
 import json
@@ -280,10 +280,10 @@ def scrap_group(group_url, search_term, max_posts):
         human_typing(username_field, 'edwardswan721@gmail.com')  # Replace with your email
         human_typing(password_field, 'edwardswan123')  # Replace with your password
         login_button.click()
-
+        time.sleep(5)
         # Wait for login to complete
         try:
-            WebDriverWait(driver, 120).until(
+            WebDriverWait(driver, 20).until(
                 EC.presence_of_element_located((By.CSS_SELECTOR, 'div[role="feed"]'))
             )
             print("Logged in successfully and on home page")
@@ -373,6 +373,85 @@ def scrap_group(group_url, search_term, max_posts):
 
     finally:
         driver.quit()
+def scrape_facebook_page(hours):
+    try:
+        # Log in to Facebook
+        driver.get('https://www.facebook.com/')
+        time.sleep(5)
+       
+
+        # Navigate to the Facebook page
+        driver.get('https://www.facebook.com/orange.tn/')
+        print("Navigated to the Facebook page")
+        time.sleep(10)  # Wait for the page to load
+        driver.save_screenshot('navigated_page.png')
+        close_unexpected_popups()
+        # Verify navigation
+        current_url = driver.current_url
+        print("Current URL:", current_url)
+        if 'orange.tn' not in current_url:
+            raise Exception("Navigation to the specified page failed")
+        print("Verified navigation to the specified page")
+       
+        # Set the target date based on the number of hours entered by the user
+        target_date = datetime.now() - timedelta(hours=hours)
+        print(f"Target date set to: {target_date}")
+        close_unexpected_popups()
+        processed_posts = set()
+        scraped_data = []
+        target_reached = False
+
+        while not target_reached:
+            driver.execute_script("window.scrollBy(0, 1000);")
+            time.sleep(5)
+
+            posts = driver.find_elements(By.CSS_SELECTOR, 'div.x1yztbdb.x1n2onr6.xh8yej3.x1ja2u2z')
+            for post in posts:
+                post_id = post.text[:30]
+                if post_id in processed_posts:
+                    continue
+                processed_posts.add(post_id)
+
+                post_date = parse_post_date(post)
+                if post_date and post_date < target_date:
+                    print("Reached posts older than target date. Stopping.")
+                    target_reached = True
+                    break
+
+                post_text = post.text.strip().replace('\n', ' ')
+                if not scroll_and_click(driver, post):
+                    continue
+
+                post_url = driver.current_url
+                load_all_comments()
+                comments = driver.find_elements(By.CSS_SELECTOR, 'div.x1y1aw1k.xn6708d.xwib8y2.x1ye3gou')
+                comments_text = [comment.text for comment in comments]
+                cleaned_comments = clean_comments(comments_text)
+
+                scraped_data.append({
+                    'post_id': post_id,
+                    'post_text': post_text,
+                    'post_url': post_url,
+                    'comments': json.dumps(cleaned_comments)
+                })
+
+                try:
+                    close_button = WebDriverWait(driver, 10).until(
+                        EC.element_to_be_clickable((By.XPATH, "//div[@aria-label='Fermer']"))
+                    )
+                    driver.execute_script("arguments[0].click();", close_button)
+                except Exception as e:
+                    print(f"Failed to close popup: {e}")
+
+        # Save data to CSV
+        df = pd.DataFrame(scraped_data)
+        df['comments'] = df['comments'].apply(lambda x: ' | '.join(json.loads(x)))
+        df.to_csv('scraped_data.csv', index=False, encoding='utf-8')
+        print("Data saved to 'scraped_data.csv'")
+        return df.to_dict(orient='records')
+
+    finally:
+        driver.quit()
 
 # Flask route to trigger scraping
 @app.route('/scrap_groupe', methods=['GET'])
@@ -382,11 +461,29 @@ def scrap_groupe():
     max_posts = int(request.args.get('max_posts', 5))  # Default to 5 posts if not provided
     scraped_data = scrap_group(group_url, search_term, max_posts)
     return jsonify(scraped_data)
-
+@app.route('/scrap_page', methods=['GET'])
+def scrap_page():
+    hours = int(request.args.get('hours'))
+    # Call the page scraping function with the number of hours
+    scraped_data = scrape_facebook_page(hours)
+    # Return a success message after scraping
+    return jsonify(scraped_data)
 @app.route('/')
 def home():
+    return render_template('home.html')
+@app.route('/groups')
+def groups():
     return render_template('index.html')
-
+@app.route('/pages')
+def pages():
+    return render_template('pages_form.html')
+@app.route('/download_csv')
+def download_csv():
+    file_path = 'scraped_data.csv'
+    if os.path.exists(file_path):
+        return send_file(file_path, as_attachment=True, download_name='scraped_data.csv', mimetype='text/csv')
+    else:
+        return jsonify({"error": "File not found"}), 404
 
 if __name__ == '__main__':
     app.run(debug=True)
