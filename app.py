@@ -72,11 +72,9 @@ chrome_options.add_argument("--disable-blink-features=AutomationControlled")
 chrome_options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36")
 chrome_options.add_argument("--proxy-server='direct://'")
 chrome_options.add_argument("--proxy-bypass-list=*")
-chrome_options.add_argument('--disable-software-rasterizer')
 # Chrome flags to reduce memory consumption
-chrome_options.add_argument('--disable-background-timer-throttling')
-chrome_options.add_argument('--disable-backgrounding-occluded-windows')
 
+chrome_options.add_argument("--start-maximized")
 
 service = Service(ChromeDriverManager().install(), port=0)  # Let OS pick an open port
 driver = webdriver.Chrome(service=service, options=chrome_options)
@@ -395,13 +393,12 @@ def scrap_group(group_url, search_term, max_posts):
     finally:
         driver.quit()
 def scrape_facebook_page(hours):
-    
     try:
         # Log in to Facebook
         driver.get('https://www.facebook.com/')
         time.sleep(5)
        
-        close_unexpected_popups()
+
         # Navigate to the Facebook page
         driver.get('https://www.facebook.com/orange.tn/')
         print("Navigated to the Facebook page")
@@ -414,11 +411,11 @@ def scrape_facebook_page(hours):
         if 'orange.tn' not in current_url:
             raise Exception("Navigation to the specified page failed")
         print("Verified navigation to the specified page")
-        close_unexpected_popups()
+       
         # Set the target date based on the number of hours entered by the user
         target_date = datetime.now() - timedelta(hours=hours)
         print(f"Target date set to: {target_date}")
-        
+        close_unexpected_popups()
         processed_posts = set()
         scraped_data = []
         target_reached = False
@@ -443,8 +440,6 @@ def scrape_facebook_page(hours):
                 post_text = post.text.strip().replace('\n', ' ')
                 if not scroll_and_click(driver, post):
                     continue
-                
-                time.sleep(5)
 
                 post_url = driver.current_url
                 load_all_comments()
@@ -473,7 +468,6 @@ def scrape_facebook_page(hours):
         df.to_csv('scraped_data.csv', index=False, encoding='utf-8')
         print("Data saved to 'scraped_data.csv'")
         return df.to_dict(orient='records')
-   
 
     finally:
         driver.quit()
