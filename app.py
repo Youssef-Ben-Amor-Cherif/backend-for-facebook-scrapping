@@ -394,7 +394,7 @@ def scrap_group(group_url, search_term, max_posts):
     finally:
         driver.quit()
 def scrape_facebook_page(hours):
-    try:
+    
     try:
         # Log in to Facebook
         driver.get('https://www.facebook.com/')
@@ -470,9 +470,7 @@ def scrape_facebook_page(hours):
         df.to_csv('scraped_data.csv', index=False, encoding='utf-8')
         print("Data saved to 'scraped_data.csv'")
         return df.to_dict(orient='records')
-    except Exception as e:
-        app.logger.error(f"Error occurred: {e}")
-        return "An error occurred", 500
+   
 
     finally:
         driver.quit()
