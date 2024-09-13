@@ -20,4 +20,3 @@ pip3 install -r requirements.txt
 #export PATH="${PATH}:/opt/render/project/.render/chrome/opt/google/chrome"
 # add your own build commands...
 
-gunicorn app:app --workers=2 --timeout 300 --bind 0.0.0.0:$PORT
