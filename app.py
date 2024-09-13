@@ -401,7 +401,7 @@ def scrape_facebook_page(hours):
         driver.get('https://www.facebook.com/')
         time.sleep(5)
        
-
+        close_unexpected_popups()
         # Navigate to the Facebook page
         driver.get('https://www.facebook.com/orange.tn/')
         print("Navigated to the Facebook page")
@@ -414,7 +414,7 @@ def scrape_facebook_page(hours):
         if 'orange.tn' not in current_url:
             raise Exception("Navigation to the specified page failed")
         print("Verified navigation to the specified page")
-       
+        close_unexpected_popups()
         # Set the target date based on the number of hours entered by the user
         target_date = datetime.now() - timedelta(hours=hours)
         print(f"Target date set to: {target_date}")
