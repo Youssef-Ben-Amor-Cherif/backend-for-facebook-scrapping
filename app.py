@@ -441,7 +441,9 @@ def scrape_facebook_page(hours):
                     break
 
                 post_text = post.text.strip().replace('\n', ' ')
-                scroll_and_click(driver, post)
+                if not scroll_and_click(driver, post):
+                    continue
+                
                 time.sleep(5)
 
                 post_url = driver.current_url
