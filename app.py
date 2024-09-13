@@ -304,7 +304,7 @@ def scrap_group(group_url, search_term, max_posts):
         time.sleep(5)
         # Wait for login to complete
         try:
-            WebDriverWait(driver, 20).until(
+            WebDriverWait(driver, 120).until(
                 EC.presence_of_element_located((By.CSS_SELECTOR, 'div[role="feed"]'))
             )
             print("Logged in successfully and on home page")
