@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, render_template, request,send_file
 
 import os
+import logging
 import hashlib
 import random
 import json
@@ -394,6 +395,7 @@ def scrap_group(group_url, search_term, max_posts):
         driver.quit()
 def scrape_facebook_page(hours):
     try:
+    try:
         # Log in to Facebook
         driver.get('https://www.facebook.com/')
         time.sleep(5)
@@ -468,6 +470,9 @@ def scrape_facebook_page(hours):
         df.to_csv('scraped_data.csv', index=False, encoding='utf-8')
         print("Data saved to 'scraped_data.csv'")
         return df.to_dict(orient='records')
+    except Exception as e:
+        app.logger.error(f"Error occurred: {e}")
+        return "An error occurred", 500
 
     finally:
         driver.quit()
