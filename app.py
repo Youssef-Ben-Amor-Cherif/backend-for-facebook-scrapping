@@ -76,11 +76,18 @@ chrome_options.add_argument("--proxy-bypass-list=*")
 chrome_options.add_argument("--start-maximized")
 chrome_options.add_argument("--disable-dev-shm-usage")
 chrome_options.add_argument("--start-maximized")
+chrome_options.add_argument('--single-process')  # Run as a single process
+chrome_options.add_argument('--disable-software-rasterizer')  # Disable 3D graphics
 
+# Chrome flags to reduce memory consumption
+chrome_options.add_argument('--disable-background-timer-throttling')
+chrome_options.add_argument('--disable-backgrounding-occluded-windows')
+chrome_options.add_argument('--disable-renderer-backgrounding')
 
 service = Service(ChromeDriverManager().install(), port=0)  # Let OS pick an open port
 driver = webdriver.Chrome(service=service, options=chrome_options)
 driver.set_page_load_timeout(60)
+driver.implicitly_wait(30)
 # Initialize WebDriver
 # Initialize WebDriver
 def human_typing(element, text):
