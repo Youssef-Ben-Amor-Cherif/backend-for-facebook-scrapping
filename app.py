@@ -26,6 +26,7 @@ from selenium.webdriver.common.keys import Keys
 from webdriver_manager.chrome import ChromeDriverManager
 
 app = Flask(__name__)
+logging.basicConfig(level=logging.DEBUG)
 def scroll_and_click(driver, element, retries=3):
     """Scroll into view and click the element, with retry attempts."""
     for attempt in range(retries):
@@ -504,5 +505,6 @@ def download_csv():
         return jsonify({"error": "File not found"}), 404
 
 if __name__ == '__main__':
+
     port = int(os.environ.get('PORT', 5000))  # Get the port from environment or default to 5000
-    app.run(host='0.0.0.0', port=port)
+    app.run(host='0.0.0.0', port=port,debug=True)
