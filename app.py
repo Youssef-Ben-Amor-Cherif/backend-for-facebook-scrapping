@@ -378,7 +378,7 @@ def scrap_group(group_url, search_term, max_posts):
                 })
 
                 # Close the post or the popup
-                 try:
+                try:
                     close_button = WebDriverWait(driver, 10).until(
                         EC.element_to_be_clickable((By.XPATH, "//div[@aria-label='Fermer']"))
                     )
