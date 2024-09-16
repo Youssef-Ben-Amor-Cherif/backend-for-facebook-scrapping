@@ -398,10 +398,32 @@ def scrap_group(group_url, search_term, max_posts):
     finally:
         driver.quit()
 def scrape_facebook_page(hours):
-    try:
-        # Log in to Facebook
-        driver.get('https://www.facebook.com/')
+   try:
+        # Open Facebook login page
+        driver.get('https://www.facebook.com/login')
+        time.sleep(5)  # Wait for the page to load
+
+        # Log in (replace with your own credentials)
+        username_field = WebDriverWait(driver, 30).until(
+            EC.presence_of_element_located((By.ID, 'email'))
+        )
+        password_field = driver.find_element(By.ID, 'pass')
+        login_button = driver.find_element(By.NAME, 'login')
+
+        human_typing(username_field, 'edwardswan721@gmail.com')  # Replace with your email
+        human_typing(password_field, 'edwardswan123')  # Replace with your password
+        login_button.click()
         time.sleep(5)
+        # Wait for login to complete
+        try:
+            WebDriverWait(driver, 120).until(
+                EC.presence_of_element_located((By.CSS_SELECTOR, 'div[role="feed"]'))
+            )
+            print("Logged in successfully and on home page")
+            driver.save_screenshot('home_page.png')
+        except Exception as e:
+            print("Failed to find home page:", str(e))
+            driver.save_screenshot('home_page_failed.png')
        
 
         # Navigate to the Facebook page
@@ -420,7 +442,7 @@ def scrape_facebook_page(hours):
         # Set the target date based on the number of hours entered by the user
         target_date = datetime.now() - timedelta(hours=hours)
         print(f"Target date set to: {target_date}")
-        close_unexpected_popups()
+        close_unexpected_popups
         processed_posts = set()
         scraped_data = []
         target_reached = False
@@ -431,10 +453,11 @@ def scrape_facebook_page(hours):
 
             posts = driver.find_elements(By.CSS_SELECTOR, 'div.x1yztbdb.x1n2onr6.xh8yej3.x1ja2u2z')
             for post in posts:
-                post_id = get_unique_post_id(post)
-                if not post_id or post_id in processed_posts:
+                post_id = post.text[:30]
+                if post_id in processed_posts:
                     continue
                 processed_posts.add(post_id)
+
                 post_date = parse_post_date(post)
                 close_unexpected_popups()
                 if post_date and post_date < target_date:
@@ -443,9 +466,8 @@ def scrape_facebook_page(hours):
                     break
 
                 post_text = post.text.strip().replace('\n', ' ')
-                close_unexpected_popups()
-                scroll_and_click(driver, post)
-                time.sleep(5)
+                if not scroll_and_click(driver, post):
+                    continue
 
                 post_url = driver.current_url
                 load_all_comments()
@@ -465,8 +487,6 @@ def scrape_facebook_page(hours):
                         EC.element_to_be_clickable((By.XPATH, "//div[@aria-label='Fermer']"))
                     )
                     driver.execute_script("arguments[0].click();", close_button)
-                except TimeoutException:
-                    print("Popup close button not found. Skipping.")
                 except Exception as e:
                     print(f"Failed to close popup: {e}")
 
@@ -476,9 +496,9 @@ def scrape_facebook_page(hours):
         df.to_csv('scraped_data.csv', index=False, encoding='utf-8')
         print("Data saved to 'scraped_data.csv'")
         return df.to_dict(orient='records')
+
     finally:
         driver.quit()
-
 # Flask route to trigger scraping
 @app.route('/scrap_groupe', methods=['GET'])
 def scrap_groupe():
