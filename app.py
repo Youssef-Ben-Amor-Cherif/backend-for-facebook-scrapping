@@ -431,11 +431,10 @@ def scrape_facebook_page(hours):
 
             posts = driver.find_elements(By.CSS_SELECTOR, 'div.x1yztbdb.x1n2onr6.xh8yej3.x1ja2u2z')
             for post in posts:
-                post_id = post.text[:30]
-                if post_id in processed_posts:
+                post_id = get_unique_post_id(post)
+                if not post_id or post_id in processed_posts:
                     continue
                 processed_posts.add(post_id)
-
                 post_date = parse_post_date(post)
                 close_unexpected_popups()
                 if post_date and post_date < target_date:
