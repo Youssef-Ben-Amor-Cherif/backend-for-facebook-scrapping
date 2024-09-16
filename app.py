@@ -418,7 +418,7 @@ def scrape_facebook_page(hours):
         # Set the target date based on the number of hours entered by the user
         target_date = datetime.now() - timedelta(hours=hours)
         print(f"Target date set to: {target_date}")
-        close_unexpected_popups()
+        close_unexpected_popups
         processed_posts = set()
         scraped_data = []
         target_reached = False
@@ -435,6 +435,7 @@ def scrape_facebook_page(hours):
                 processed_posts.add(post_id)
 
                 post_date = parse_post_date(post)
+                close_unexpected_popups()
                 if post_date and post_date < target_date:
                     print("Reached posts older than target date. Stopping.")
                     target_reached = True
