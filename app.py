@@ -75,7 +75,7 @@ chrome_options.add_argument("--proxy-bypass-list=*")
 # Chrome flags to reduce memory consumption
 
 #chrome_options.add_argument("--start-maximized")
-chrome_options.add_argument('--disable-background-timer-throttling')  # Reduce timer throttling
+#chrome_options.add_argument('--disable-background-timer-throttling')  # Reduce timer throttling
 chrome_options.add_argument('--disable-backgrounding-occluded-windows')  # Disable backgrounding of occluded windows
 #chrome_options.add_argument('--disable-renderer-backgrounding')  # Prevent renderer backgrounding
 chrome_options.add_argument('--remote-debugging-port=9222') 
