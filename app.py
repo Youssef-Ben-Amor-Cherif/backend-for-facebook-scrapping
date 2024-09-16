@@ -212,7 +212,7 @@ def normalize_date_text(date_text):
 def parse_post_date(post_element):
     """Extract and parse the post date from the post element."""
     try:
-        # Patterns for matching relative times (e.g., '1 j' for 1 day ago)
+        # Patterns for matching dates and relative times
         relative_date_patterns = [
             r'\d+ h',         # Hours
             r'\d+ m',         # Minutes
@@ -221,11 +221,10 @@ def parse_post_date(post_element):
             r'\d+ heures'     # Hours (French)
         ]
 
-        # CSS selector for finding date spans
         date_spans = post_element.find_elements(By.CSS_SELECTOR, 'span.x4k7w5x.x1h91t0o.x1h9r5lt.x1jfb8zj.xv2umb2.x1beo9mf')
 
         for span in date_spans:
-            date_text = span.text.strip()  # Convert to lowercase for easier matching
+            date_text = span.text.strip().lower()  # Convert to lowercase to match month names
             if not date_text:
                 continue
 
@@ -239,31 +238,32 @@ def parse_post_date(post_element):
                         print(f"Parsed relative date: {relative_date}")
                         return relative_date
 
-            # Normalize and parse absolute dates (e.g., '31 août', '1 septembre')
+            # Normalize and parse absolute dates
             normalized_date_text = normalize_date_text(date_text)
             try:
-                # Handle special cases like 'aujourd'hui' (today) and 'hier' (yesterday)
                 if 'aujourd\'hui' in normalized_date_text or 'hier' in normalized_date_text:
                     return datetime.now() if 'aujourd\'hui' in normalized_date_text else datetime.now() - timedelta(days=1)
-
-                # Match and parse '31 08' or '31 août' format
-                if re.match(r'\d{1,2} \d{2}', normalized_date_text) or re.match(r'\d{1,2} \w+', normalized_date_text):
-                    possible_date = datetime.strptime(normalized_date_text, '%d %B')  # Adjust format as needed
+                
+                # Example for '31 08' format (day month)
+                if re.search(r'\d{1,2} \d{2}', normalized_date_text):
+                    possible_date = datetime.strptime(normalized_date_text, '%d %m')
+                    possible_date = possible_date.replace(year=datetime.now().year)
+                    print(f"Parsed absolute date: {possible_date}")
+                    return possible_date
+                
+                # Example for '31 août' format (day month name)
+                if re.search(r'\d{1,2} \w+', normalized_date_text):
+                    possible_date = datetime.strptime(normalized_date_text, '%d %B')
                     possible_date = possible_date.replace(year=datetime.now().year)
                     print(f"Parsed absolute date: {possible_date}")
                     return possible_date
 
             except ValueError as ve:
-                print(f"Date parsing error for '{date_text}': {ve}")
-                continue  # Continue to the next span if parsing fails
-             except Exception as e:
-                print(f"Unexpected error while parsing date: {e}")
+                print(f"Date parsing error: {ve}")
                 continue
 
         print("No valid date found.")
-        
         return None
-
     except Exception as e:
         print(f"Error parsing post date: {e}")
         return None
