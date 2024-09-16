@@ -443,6 +443,7 @@ def scrape_facebook_page(hours):
                     break
 
                 post_text = post.text.strip().replace('\n', ' ')
+                close_unexpected_popups()
                 if not scroll_and_click(driver, post):
                     continue
 
