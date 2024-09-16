@@ -256,8 +256,12 @@ def parse_post_date(post_element):
             except ValueError as ve:
                 print(f"Date parsing error for '{date_text}': {ve}")
                 continue  # Continue to the next span if parsing fails
+             except Exception as e:
+                print(f"Unexpected error while parsing date: {e}")
+                continue
 
         print("No valid date found.")
+        
         return None
 
     except Exception as e:
