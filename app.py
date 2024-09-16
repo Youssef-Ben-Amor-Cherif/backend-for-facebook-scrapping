@@ -225,7 +225,7 @@ def parse_post_date(post_element):
         date_spans = post_element.find_elements(By.CSS_SELECTOR, 'span.x4k7w5x.x1h91t0o.x1h9r5lt.x1jfb8zj.xv2umb2.x1beo9mf')
 
         for span in date_spans:
-            date_text = span.text.strip().lower()  # Convert to lowercase for easier matching
+            date_text = span.text.strip()  # Convert to lowercase for easier matching
             if not date_text:
                 continue
 
@@ -428,7 +428,6 @@ def scrape_facebook_page(hours):
         print("Navigated to the Facebook page")
         time.sleep(10)  # Wait for the page to load
         driver.save_screenshot('navigated_page.png')
-        close_unexpected_popups()
         # Verify navigation
         current_url = driver.current_url
         print("Current URL:", current_url)
@@ -439,7 +438,7 @@ def scrape_facebook_page(hours):
         # Set the target date based on the number of hours entered by the user
         target_date = datetime.now() - timedelta(hours=hours)
         print(f"Target date set to: {target_date}")
-        close_unexpected_popups
+        
         processed_posts = set()
         scraped_data = []
         target_reached = False
@@ -456,7 +455,7 @@ def scrape_facebook_page(hours):
                 processed_posts.add(post_id)
 
                 post_date = parse_post_date(post)
-                close_unexpected_popups()
+                
                 if post_date and post_date < target_date:
                     print("Reached posts older than target date. Stopping.")
                     target_reached = True
