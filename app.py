@@ -418,7 +418,7 @@ def scrape_facebook_page(hours):
         # Set the target date based on the number of hours entered by the user
         target_date = datetime.now() - timedelta(hours=hours)
         print(f"Target date set to: {target_date}")
-        close_unexpected_popups
+        close_unexpected_popups()
         processed_posts = set()
         scraped_data = []
         target_reached = False
@@ -463,6 +463,8 @@ def scrape_facebook_page(hours):
                         EC.element_to_be_clickable((By.XPATH, "//div[@aria-label='Fermer']"))
                     )
                     driver.execute_script("arguments[0].click();", close_button)
+                except TimeoutException:
+                    print("Popup close button not found. Skipping.")
                 except Exception as e:
                     print(f"Failed to close popup: {e}")
 
