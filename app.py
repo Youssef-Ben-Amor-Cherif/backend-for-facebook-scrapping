@@ -378,11 +378,13 @@ def scrap_group(group_url, search_term, max_posts):
                 })
 
                 # Close the post or the popup
-                try:
+                 try:
                     close_button = WebDriverWait(driver, 10).until(
                         EC.element_to_be_clickable((By.XPATH, "//div[@aria-label='Fermer']"))
                     )
                     driver.execute_script("arguments[0].click();", close_button)
+                except TimeoutException:
+                    print("Popup close button not found. Skipping.")
                 except Exception as e:
                     print(f"Failed to close popup: {e}")
 
@@ -474,7 +476,6 @@ def scrape_facebook_page(hours):
         df.to_csv('scraped_data.csv', index=False, encoding='utf-8')
         print("Data saved to 'scraped_data.csv'")
         return df.to_dict(orient='records')
-
     finally:
         driver.quit()
 
@@ -488,7 +489,7 @@ def scrap_groupe():
     return jsonify(scraped_data)
 @app.route('/scrap_page', methods=['GET'])
 def scrap_page():
-    hours = int(request.args.get('hours'))
+    hours = int(request.args.get('hours', 1))
     # Call the page scraping function with the number of hours
     scraped_data = scrape_facebook_page(hours)
     # Return a success message after scraping
