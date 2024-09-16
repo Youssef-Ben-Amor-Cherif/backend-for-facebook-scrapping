@@ -398,7 +398,7 @@ def scrap_group(group_url, search_term, max_posts):
     finally:
         driver.quit()
 def scrape_facebook_page(hours):
-   try:
+    try:
         # Open Facebook login page
         driver.get('https://www.facebook.com/login')
         time.sleep(5)  # Wait for the page to load
