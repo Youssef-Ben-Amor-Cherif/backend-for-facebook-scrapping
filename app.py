@@ -78,7 +78,7 @@ chrome_options.add_argument("--proxy-bypass-list=*")
 #chrome_options.add_argument('--disable-background-timer-throttling')  # Reduce timer throttling
 #chrome_options.add_argument('--disable-backgrounding-occluded-windows')  # Disable backgrounding of occluded windows
 #chrome_options.add_argument('--disable-renderer-backgrounding')  # Prevent renderer backgrounding
-chrome_options.add_argument('--remote-debugging-port=9222') 
+#chrome_options.add_argument('--remote-debugging-port=9222') 
 service = Service(ChromeDriverManager().install(), port=0)  # Let OS pick an open port
 driver = webdriver.Chrome(service=service, options=chrome_options)
 #driver.set_page_load_timeout(1120)
