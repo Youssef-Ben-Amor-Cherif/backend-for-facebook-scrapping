@@ -300,8 +300,8 @@ def scrap_group(group_url, search_term, max_posts):
         password_field = driver.find_element(By.ID, 'pass')
         login_button = driver.find_element(By.NAME, 'login')
 
-        human_typing(username_field, 'edwardswan721@gmail.com')  # Replace with your email
-        human_typing(password_field, 'edwardswan123')  # Replace with your password
+        human_typing(username_field, '*******')  # Replace with your email
+        human_typing(password_field, '*********')  # Replace with your password
         login_button.click()
         time.sleep(5)
         # Wait for login to complete
